@@ -6,6 +6,7 @@ const Discord = require("discord.js");
 const fs = Promise.promisifyAll(require("fs"));
 const Path = require("path");
 const r = require("rethinkdb");
+const uuid = require("node-uuid");
 
 class Garmbot extends Discord.Client {
 	constructor() {
@@ -26,7 +27,7 @@ class Garmbot extends Discord.Client {
 		this.createDatabaseIfNotExists(config.get("rethink.dbPrefix") + "global");
 
 		// Reload commands
-		this.reloadCommands();
+		this.reloadCommands().catch(this.errorHandler);
 
 		// Bind events
 		debug("Binding events");
@@ -37,6 +38,20 @@ class Garmbot extends Discord.Client {
 		// Log in
 		debug("Logging in");
 		this.login(config.get("discord.botToken"));
+	}
+
+	async errorHandler(err, id) {
+		debug("Encountered error");
+		if (this.readyAt) {
+			debug("I'm connected, I'll try to report it to someone");
+			let user = await this.fetchUser(config.get("reportErrorsToUser"));
+			if (user) {
+				debug("Reporting error to %s", user.id);
+				return user.sendCode("", "Error ID: " + id + "\n\n" + err.stack);
+			}
+		}
+		debug("Can't report it to anyone");
+		console.error(err);		
 	}
 
 	async ready() {
@@ -72,16 +87,20 @@ class Garmbot extends Discord.Client {
 			for (let i = 0; i < commands.length; i++) {
 				if (commands[i].aliases.indexOf(commandName) > -1) {
 					debug("Executing command %s", commandName);
-					return commands[i].function(this, message, args).catch((err) => {
-						console.error(err);
-						let embed = new Discord.RichEmbed();
-						embed.setTitle("I've been hecked!");
-						embed.setDescription("I'm not sure what I did, but I hit an error trying to do that! I'm s-sorry ;-;");
-						embed.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
-						embed.setColor(0xff0000);
+					try {
+						return commands[i].function(this, message, args)
+					} catch (err) {
+						let id = uuid.v4();
+						this.errorHandler(err, id);
 
+						let embed = new Discord.RichEmbed()
+							.setTitle("I've been hecked!")
+							.setDescription("I'm not sure what I did, but I hit an error trying to do that! I'm s-sorry ;-;")
+							.addField("Please report this error", "Go to http://github.com/dnaf/Garmbot/issues and report this issue, along with the following code\n\n`" + id + "`")
+							.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
+							.setColor(0xff0000);
 						return message.channel.sendEmbed(embed, message.author.toString());
-					});
+					}
 				}
 			}
 
@@ -111,6 +130,8 @@ class Garmbot extends Discord.Client {
 				return resolve(commands);
 			}).catch(reject);
 		});
+
+		return this.commands;
 	}
 
 	/**

@@ -10,5 +10,6 @@
 		"password": "",
 		"timeout": 20
 	},
-	"commandPrefix": "!"
+	"commandPrefix": "!",
+	"reportErrorsToUser": ""
 }
