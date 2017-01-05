@@ -1,0 +1,14 @@
+{
+	"discord": {
+		"botToken": ""
+	},
+	"rethink": {
+		"host": "localhost",
+		"port": 28015,
+		"dbPrefix": "garmbot_",
+		"user": "admin",
+		"password": "",
+		"timeout": 20
+	},
+	"commandPrefix": "!"
+}
