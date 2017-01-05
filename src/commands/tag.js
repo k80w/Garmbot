@@ -91,7 +91,12 @@ module.exports = {
 				"conflict": "replace"
 			}).run(conn);
 
-			await message.reply("Doneski!");
+			let embed = new Discord.RichEmbed()
+				.setTitle("Doneski!")
+				.setDescription("Successfully created the tag `" + tagName + "`")
+				.setColor(0x00ff00);
+			
+			return message.channel.sendEmbed(embed, message.author.toString());
 		}
 	}
 }
