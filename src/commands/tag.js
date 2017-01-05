@@ -18,10 +18,15 @@ module.exports = {
 		if (args.length === 0) { // List tags
 			debug("Listing tags");
 
-			let cursor = await table.getAll().run(conn);
+			let cursor = await table.run(conn);
 			let tags = await cursor.toArray();
+			tags = await tags.map((tag) => {
+				return tag.name;
+			});
 
-			if (tags.length > 1) {
+			debug("Tag count: %s", tags.length);
+
+			if (tags.length > 0) {
 				return message.reply(tags.join(", "));
 			} else {
 				return message.reply("There aren't any tags on this server yet. Make one with `!t NAME tag`");
