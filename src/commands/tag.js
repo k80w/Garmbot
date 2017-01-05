@@ -21,15 +21,25 @@ module.exports = {
 			let cursor = await table.run(conn);
 			let tags = await cursor.toArray();
 			tags = await tags.map((tag) => {
-				return tag.name;
+				return "`" + tag.name + "`";
 			});
 
 			debug("Tag count: %s", tags.length);
 
 			if (tags.length > 0) {
-				return message.reply(tags.join(", "));
+				let embed = new Discord.RichEmbed()
+					.setTitle("Tags")
+					.setDescription(tags.join(", "))
+					.setColor(0x00ff00);
+			
+				return message.channel.sendEmbed(embed, message.author.toString());
 			} else {
-				return message.reply("There aren't any tags on this server yet. Make one with `!t NAME tag`");
+				let embed = new Discord.RichEmbed()
+					.setTitle("No tags")
+					.setDescription("There aren't any tags on this server yet.")
+					.setColor(0xff0000);
+			
+				return message.channel.sendEmbed(embed, message.author.toString());
 			}
 		} else if (args.length === 1) { // Return tag
 			let tagName = args[0];
