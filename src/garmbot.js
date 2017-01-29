@@ -241,13 +241,13 @@ class Garmbot extends Discord.Client {
 	 * @returns {Number} messageCount
 	 */
 	async getRecentMessagesInChannel(channel, period) {
+		debug("Getting recent messages in channel %s", channel.id);
 		let cutoff = Number(new Date()) - period * 1000;
 		let earliestMessage = null;
 		let earliestTimestamp;
 		let messageCount = 0;
 
 		while (!earliestTimestamp || earliestTimestamp >= cutoff) {
-			debug("Getting messages before %s;", (earliestMessage || {}).id);
 			let messages = await channel.fetchMessages({
 				limit: 50,
 				before: (earliestMessage || {}).id
