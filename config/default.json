@@ -10,10 +10,6 @@
 		"password": "",
 		"timeout": 20
 	},
-	"plotly": {
-		"username": "",
-		"token": ""
-	},
 	"commandPrefix": "!",
 	"reportErrorsToUser": "",
 	"disableReactionsAtCapIn": []
