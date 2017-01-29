@@ -18,7 +18,7 @@ module.exports = function(garmbot) {
 
 				let date = new Date();
 				let datestring = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + (date.getUTCDate() + 1) + " " + (date.getUTCHours() + 1) + ":" + date.getUTCMinutes() + ":" + date.getUTCSeconds();
-				let count = await garmbot.getRecentMessagesInChannel(channel, 120);
+				let count = await garmbot.getRecentMessagesInChannel(channel, 60);
 
 				let data = [{
 					x: [new Date()],
@@ -45,7 +45,7 @@ module.exports = function(garmbot) {
 
 		garmbot.on("ready", () => {
 			plotter();
-			setInterval(plotter, 120000);
+			setInterval(plotter, 60000);
 		});
 	}
 }
