@@ -24,10 +24,26 @@ class Garmbot extends Discord.Client {
 			"timeout": config.get("rethink.timeout")
 		});
 
-		this.createDatabaseIfNotExists(config.get("rethink.dbPrefix") + "global");
+		let globalDbName = config.get("rethink.dbPrefix") + "global";
+		this.createDatabaseIfNotExists(globalDbName);
+		//this.createTableIfNotExists(globalDbName, "defaultPermissions")
 
-		// Reload commands
-		this.reloadCommands().catch(this.errorHandler);
+		this.commands = [];
+		this.guildPreperationFunctions = [
+			async (conn, dbName) => {
+				await this.createDatabaseIfNotExists(dbName)
+			},
+			async (conn, dbName) => {
+				await this.createTableIfNotExists(dbName, "config", {
+					"primaryKey": "key"
+				});
+			},
+			async (conn, dbName) => {
+				await this.createTableIfNotExists(dbName, "permissions");
+			}
+		];
+
+		this.loadPlugins();
 
 		// Bind events
 		debug("Binding events");
@@ -55,8 +71,12 @@ class Garmbot extends Discord.Client {
 	}
 
 	async ready() {
-		this.guilds.forEach((guild) => {
-			this.updateGuildInfo(guild);
+		this.updateAllGuildInfo();
+	}
+
+	async updateAllGuildInfo() {
+		return this.guilds.forEach((guild) => {
+			return this.updateGuildInfo(guild);
 		});
 	}
 
@@ -88,7 +108,7 @@ class Garmbot extends Discord.Client {
 				if (commands[i].aliases.indexOf(commandName) > -1) {
 					debug("Executing command %s", commandName);
 					try {
-						return commands[i].function(this, message, args)
+						return commands[i].function(message, args)
 					} catch (err) {
 						let id = uuid.v4();
 						this.errorHandler(err, id);
@@ -114,24 +134,22 @@ class Garmbot extends Discord.Client {
 		}
 	}
 
-	reloadCommands() {
-		debug("Reloading commands");
+	loadPlugins() {
+		debug("Loading plugins");
 
-		this.commands = new Promise((resolve, reject) => {
-			let commandPath = Path.join(__dirname, "commands");
+		let pluginPath = Path.join(process.cwd(), "plugins");
 
-			return fs.readdirAsync(commandPath).map((file) => {
-				if (file.match(/\.js$/)) {
-					debug("Loading %s", file);
-					return require(Path.join(commandPath, file));
-				}
-				return null;
-			}).then((commands) => {
-				return resolve(commands);
-			}).catch(reject);
+		this.plugins = fs.readdirAsync(pluginPath).map((file) => {
+			if (!file.startsWith(".") && !file.toLowerCase().endsWith(".md")) {
+				return [require(Path.join(pluginPath, file)), file];
+			}
+			return [];
+		}).each(([plugin, pluginName]) => {
+			if (typeof(plugin) === "function") {
+				debug("Loading plugin %s", pluginName);
+				plugin(this);
+			}
 		});
-
-		return this.commands;
 	}
 
 	/**
@@ -159,15 +177,9 @@ class Garmbot extends Discord.Client {
 
 		let dbName = this.getGuildDBName(guild);
 
-		await this.createDatabaseIfNotExists(dbName);
-		await this.createTableIfNotExists(dbName, "config", {
-			"primaryKey": "key"
-		});
-		await this.createTableIfNotExists(dbName, "permissions");
-		await this.createTableIfNotExists(dbName, "mediaQueue");
-		await this.createTableIfNotExists(dbName, "tags", {
-			"primaryKey": "name"
-		});
+		for (let i = 0; i < this.guildPreperationFunctions.length; i++) {
+			await this.guildPreperationFunctions[i](conn, dbName);
+		}
 	}
 
 	/**
@@ -198,6 +210,66 @@ class Garmbot extends Discord.Client {
 		return await r.db(dbName).tableList().contains(tableName).do((exists) => {
 			return r.branch(exists, {tables_created: 0}, r.db(dbName).tableCreate(tableName, options));
 		}).run(conn);
+	}
+
+	async addGuildPreperation(func) {
+		this.guildPreperationFunctions.push(func);
+
+		this.updateAllGuildInfo();
+	}
+
+	addCommand(aliases, func) {
+		debug("Adding command %s", aliases[0]);
+		this.commands.push({
+			"aliases": aliases,
+			"function": func
+		});
+	}
+
+	async getUserPermission(user, guild, permission) {
+		await this.conn;
+
+		//let dbName = this.getGuildDBName(guild);
+
+		//return r.db(dbName).table("permissions")
+	}
+
+	/**
+	 * Gets the number of messages in a channel in the specified period
+	 * @param {TextChannel} channel
+	 * @param {Number} period The amount of time in seconds to check
+	 * @returns {Number} messageCount
+	 */
+	async getRecentMessagesInChannel(channel, period) {
+		let cutoff = Number(new Date()) - period * 1000;
+		let earliestMessage = null;
+		let earliestTimestamp;
+		let messageCount = 0;
+
+		while (!earliestTimestamp || earliestTimestamp >= cutoff) {
+			debug("Getting messages before %s;", (earliestMessage || {}).id);
+			let messages = await channel.fetchMessages({
+				limit: 50,
+				before: (earliestMessage || {}).id
+			});
+
+			if (messages.size === 0) {
+				debug("Hit beginning of channel; breaking");
+				break;
+			}
+
+			for(let message of messages.values()) {
+				if (!earliestTimestamp || message.createdTimestamp < earliestTimestamp) {
+					earliestMessage = message;
+					earliestTimestamp = message.createdTimestamp;
+				}
+				if (message.createdTimestamp >= cutoff) {
+					messageCount++;
+				}
+			}
+		}
+
+		return messageCount;
 	}
 }
 

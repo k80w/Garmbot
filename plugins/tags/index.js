@@ -1,10 +1,14 @@
-const debug = require("debug")("garmbot:tag");
+const debug = require("debug")("garmbot:module:tags");
 const Discord = require("discord.js");
 const r = require("rethinkdb");
 
-module.exports = {
-	"aliases": ["tag", "t", "tags"],
-	"function": async function(garmbot, message, args) {
+module.exports = function(garmbot) {
+	garmbot.addGuildPreperation((conn, dbName) => {
+		garmbot.createTableIfNotExists(dbName, "tags", {
+			"primaryKey": "name"
+		});
+	});
+	garmbot.addCommand(["tag", "t", "tags"], async function(message, args) {
 		let conn = await garmbot.conn;
 
 		let table = r.db(garmbot.getGuildDBName(message.guild)).table("tags");
@@ -14,7 +18,7 @@ module.exports = {
 		if (args[0].length === 0) {
 			args = [];
 		}
-		
+
 		if (args.length === 0) { // List tags
 			debug("Listing tags");
 
@@ -108,5 +112,5 @@ module.exports = {
 			
 			return message.channel.sendEmbed(embed, message.author.toString());
 		}
-	}
-}
+	});
+};

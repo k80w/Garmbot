@@ -11,5 +11,6 @@
 		"timeout": 20
 	},
 	"commandPrefix": "!",
-	"reportErrorsToUser": ""
+	"reportErrorsToUser": "",
+	"disableReactionsAtCapIn": []
 }
