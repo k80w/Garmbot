@@ -3,4 +3,6 @@
 !tags/*
 !colors
 !colors/*
+!math/
+!math/*
 !.gitignore
