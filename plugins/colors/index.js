@@ -42,7 +42,7 @@ module.exports = function(garmbot) {
 				embed
 					.setTitle("Color given!")
 					.setDescription("You look stunning ^-^")
-					.setColor(0x00ff00);
+					.setColor(role.hexColor);
 			} else {
 				embed
 					.setTitle("Color not found")
