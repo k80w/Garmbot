@@ -15,38 +15,50 @@ module.exports = function(garmbot) {
 
 		let roles = await colorIDs.toArray();
 
-		let role;
-
-		for (let i = 0; i < roles.length; i++) {
-			role = message.guild.roles.get(roles[i].id);
-
-			if (role && role.name.toLowerCase() === color) {
-				break;
-			} else {
-				role = undefined;
-			}
-		}
-
 		let embed = new Discord.RichEmbed();
 
-		if (role) {
+		if (color.length > 0) {
+			let role;
+
+			for (let i = 0; i < roles.length; i++) {
+				role = message.guild.roles.get(roles[i].id);
+
+				if (role && role.name.toLowerCase() === color) {
+					break;
+				} else {
+					role = undefined;
+				}
+			}
+
+			if (role) {
+				let ids = roles.map((role) => {
+					return role.id;
+				});
+				debug("Clearing color roles %s from member %s", ids, message.member);
+				await message.member.removeRoles(ids);
+				debug("Giving member %s role %s", message.member, role);
+				await message.member.addRole(role);
+
+				embed
+					.setTitle("Color given!")
+					.setDescription("You look stunning ^-^")
+					.setColor(0x00ff00);
+			} else {
+				embed
+					.setTitle("Color not found")
+					.setDescription("Make sure you spelled it right")
+					.setColor(0xff0000);
+			}
+		} else {
 			let ids = roles.map((role) => {
 				return role.id;
 			});
 			debug("Clearing color roles %s from member %s", ids, message.member);
 			await message.member.removeRoles(ids);
-			debug("Giving member %s role %s", message.member, role);
-			await message.member.addRole(role);
 
 			embed
-				.setTitle("Color given!")
-				.setDescription("You look stunning ^-^")
-				.setColor(0x00ff00);
-		} else {
-			embed
-				.setTitle("Color not found")
-				.setDescription("Make sure you spelled it right")
-				.setColor(0xff0000);
+				.setTitle("Color cleared")
+				.setDescription("You're free!")
 		}
 
 		return message.channel.sendEmbed(embed, message.author.toString());
