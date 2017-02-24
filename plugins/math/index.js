@@ -1,4 +1,4 @@
-const debug = require("debug")("garmbot:modules:math"),
+const debug = require("debug")("garmbot:module:math"),
 	Discord = require("discord.js");
 
 module.exports = function(garmbot) {
