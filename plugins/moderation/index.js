@@ -1,6 +1,6 @@
-const debug = require("debug")("garmbot:module:moderation");
-const Discord = require("discord.js");
-const r = require("rethinkdb");
+const debug = require("debug")("garmbot:module:moderation"),
+	Discord = require("discord.js"),
+	r = require("rethinkdb");
 
 function ordinalSuffix(n) {
 	var d = (n|0)%100;
