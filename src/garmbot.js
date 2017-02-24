@@ -116,7 +116,7 @@ class Garmbot extends Discord.Client {
 							.setTitle("I've been hecked!")
 							.setDescription("I'm not sure what I did, but I hit an error trying to do that! I'm s-sorry ;-;")
 							.addField("Please report this error", "Go to http://github.com/dnaf/Garmbot/issues and report this issue, along with the following code\n\n`" + id + "`")
-							.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
+							.setThumbnail("https://i.imgur.com/Q0qnyNy.png")
 							.setColor(0xff0000);
 						return message.channel.sendEmbed(embed, message.author.toString());
 					}).then(() => {
@@ -129,8 +129,8 @@ class Garmbot extends Discord.Client {
 			let embed = new Discord.RichEmbed()
 				.setTitle("Command not found")
 				.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.")
-				.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
-				.setColor(0xff0000);
+				.setThumbnail("https://i.imgur.com/Nxr2CNV.png")
+				.setColor(0x800080);
 			
 			return message.channel.sendEmbed(embed, message.author.toString()).then(() => {if (message.deletable) message.delete(2000)});
 		}
