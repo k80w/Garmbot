@@ -212,6 +212,16 @@ class Garmbot extends Discord.Client {
 		}).run(conn);
 	}
 
+	async createIndexIfNotExists(dbName, tableName, indexName, options) {
+		options = options || {};
+		let conn = await this.conn;
+		debug("Ensuring index %s.%s.%s exists", dbName, tableName, indexName);
+
+		return await r.db(dbName).table(tableName).indexList().contains(indexName).do((exists) => {
+			return r.branch(exists, {created: 0}, r.db(dbName).table(tableName).indexCreate(indexName, options));
+		}).run(conn);
+	}
+
 	async addGuildPreperation(func) {
 		this.guildPreperationFunctions.push(func);
 
