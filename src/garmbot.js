@@ -108,10 +108,6 @@ class Garmbot extends Discord.Client {
 				if (commands[i].aliases.indexOf(commandName) > -1) {
 					debug("Executing command %s", commandName);
 
-					if (message.deletable) {
-						await message.delete();
-					}
-
 					return commands[i].function(message, args).catch((err) => {
 						let id = uuid.v4();
 						this.errorHandler(err, id);
@@ -123,13 +119,12 @@ class Garmbot extends Discord.Client {
 							.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
 							.setColor(0xff0000);
 						return message.channel.sendEmbed(embed, message.author.toString());
-					});
+					}).then(() => {
+							if(message.deletable) message.delete(2000)
+						});
 				}
 			}
 
-			if (message.deletable) {
-				await message.delete();
-			}
 
 			let embed = new Discord.RichEmbed()
 				.setTitle("Command not found")
@@ -137,7 +132,7 @@ class Garmbot extends Discord.Client {
 				.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
 				.setColor(0xff0000);
 			
-			return message.channel.sendEmbed(embed, message.author.toString());
+			return message.channel.sendEmbed(embed, message.author.toString()).then(() => {if (message.deletable) message.delete(2000)});
 		}
 	}
 
