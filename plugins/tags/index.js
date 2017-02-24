@@ -113,4 +113,39 @@ module.exports = function(garmbot) {
 			return message.channel.sendEmbed(embed, message.author.toString());
 		}
 	});
+	garmbot.addCommand(["deltag"], async function(message, args) {
+		let embed = new Discord.RichEmbed();
+		if (message.member.hasPermission("MANAGE_MESSAGES")) {
+			if (args.length === 1) {
+				debug("Attempting to delete tag %s", args[0]);
+				let conn = await garmbot.conn;
+				let table = r.db(garmbot.getGuildDBName(message.guild)).table("tags");
+
+				let tag = await table.get(args[0]).run(conn);
+
+				if (tag) {
+					debug("Tag exists; deleting.");
+					await table.get(args[0]).delete().run(conn);
+					embed
+						.setTitle("Tag deleted!")
+						.setColor(0x00ff00);
+				} else {
+					debug("But the tag doesn't exist.");
+					embed
+						.setTitle("That tag doesn't exist.")
+						.setColor(0xff00000);
+				}
+			} else {
+				embed
+					.setTitle("Please specify exactly one tag to delete")
+					.setColor(0xff0000);
+			}
+		} else {
+			embed
+				.setTitle("You don't have permissions to run that command.")
+				.setColor(0xff0000);
+		}
+
+		return message.channel.sendEmbed(embed, message.author.toString());
+	});
 };
