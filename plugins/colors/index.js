@@ -63,6 +63,18 @@ module.exports = function(garmbot) {
 
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
+	garmbot.addCommand(["colors"], async function(message, args) {
+		let conn = await garmbot.conn;
+		let colors = await (await r.db(garmbot.getGuildDBName(message.guild)).table("colorRoles").run(conn)).toArray().map((v) => {
+			return message.guild.roles.get(v.id).name;
+		});
+
+		let embed = new Discord.RichEmbed()
+			.setTitle("Available colors")
+			.setDescription(colors.join(", "));
+		
+		return message.channel.sendEmbed(embed, message.author.toString());
+	});
 	garmbot.addCommand(["addcolor", "addcolors"], async function(message, args) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (message.member.hasPermission("ADMINISTRATOR")) {
