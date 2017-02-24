@@ -3,8 +3,8 @@ const debug = require("debug")("garmbot:module:tags"),
 	r = require("rethinkdb");
 
 module.exports = function(garmbot) {
-	garmbot.addGuildPreperation((conn, dbName) => {
-		garmbot.createTableIfNotExists(dbName, "tags", {
+	garmbot.addGuildPreperation(async (conn, dbName) => {
+		await garmbot.createTableIfNotExists(dbName, "tags", {
 			"primaryKey": "name"
 		});
 	});

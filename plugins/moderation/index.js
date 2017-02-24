@@ -8,9 +8,9 @@ function ordinalSuffix(n) {
 };
 
 module.exports = function(garmbot) {
-	garmbot.addGuildPreperation((conn, dbName) => {
-		garmbot.createTableIfNotExists(dbName, "infractions");
-		garmbot.createIndexIfNotExists(dbName, "infractions", "user");
+	garmbot.addGuildPreperation(async (conn, dbName) => {
+		await garmbot.createTableIfNotExists(dbName, "infractions");
+		await garmbot.createIndexIfNotExists(dbName, "infractions", "user");
 	});
 	garmbot.addCommand(["warn"], async function(message, args) {
 		let embed = new Discord.RichEmbed();

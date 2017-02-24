@@ -3,8 +3,8 @@ const debug = require("debug")("garmbot:module:colors"),
 	r = require("rethinkdb");
 
 module.exports = function(garmbot) {
-	garmbot.addGuildPreperation((conn, dbName) => {
-		garmbot.createTableIfNotExists(dbName, "colorRoles");
+	garmbot.addGuildPreperation(async (conn, dbName) => {
+		await garmbot.createTableIfNotExists(dbName, "colorRoles");
 	});
 	garmbot.addCommand(["color"], async function(message, args) {
 		let conn = await garmbot.conn;
