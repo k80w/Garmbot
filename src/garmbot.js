@@ -121,6 +121,12 @@ class Garmbot extends Discord.Client {
 							.setColor(0xff0000);
 						return message.channel.sendEmbed(embed, message.author.toString());
 					}
+					finally {
+						if (message.deletable) {
+							message.delete(2);
+						}
+					}
+
 				}
 			}
 
@@ -129,7 +135,9 @@ class Garmbot extends Discord.Client {
 			embed.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.");
 			embed.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
 			embed.setColor(0xff0000);
-
+			if (message.deletable) {
+				message.delete(2);
+			}
 			return message.channel.sendEmbed(embed, message.author.toString());
 		}
 	}
