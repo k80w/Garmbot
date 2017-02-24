@@ -71,23 +71,23 @@ module.exports = function(garmbot) {
 					}
 				}
 				
-				let embed = new Discord.RichEmbed();
-				embed.setTitle(tagName);
+				let embed = new Discord.RichEmbed()
+					.setTitle(tagName);
 				if (!hideData) embed.setDescription(tag.data);
 				if (url) {
 					embed.setImage(url);
-					embed.setURL(url)
+					embed.setURL(url);
 				}
 				if (author) embed.setFooter(author);
 				embed.setColor(0x00ff00);
 
 				return message.channel.sendEmbed(embed, message.author.toString());
 			} else {
-				let embed = new Discord.RichEmbed();
-				embed.setTitle("Tag not found");
-				embed.setDescription("The tag `" + tagName + "` was not found.");
-				embed.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
-				embed.setColor(0xff0000);
+				let embed = new Discord.RichEmbed()
+					.setTitle("Tag not found")
+					.setDescription("The tag `" + tagName + "` was not found.")
+					.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
+					.setColor(0xff0000);
 
 				return message.channel.sendEmbed(embed, message.author.toString());
 			}

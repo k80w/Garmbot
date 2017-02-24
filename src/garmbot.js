@@ -127,14 +127,16 @@ class Garmbot extends Discord.Client {
 				}
 			}
 
-			let embed = new Discord.RichEmbed();
-			embed.setTitle("Command not found");
-			embed.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.");
-			embed.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
-			embed.setColor(0xff0000);
 			if (message.deletable) {
 				await message.delete();
 			}
+
+			let embed = new Discord.RichEmbed()
+				.setTitle("Command not found")
+				.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.")
+				.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
+				.setColor(0xff0000);
+			
 			return message.channel.sendEmbed(embed, message.author.toString());
 		}
 	}
