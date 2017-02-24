@@ -1,6 +1,6 @@
-const debug = require("debug")("garmbot:module:tags");
-const Discord = require("discord.js");
-const r = require("rethinkdb");
+const debug = require("debug")("garmbot:module:tags"),
+	Discord = require("discord.js"),
+	r = require("rethinkdb");
 
 module.exports = function(garmbot) {
 	garmbot.addGuildPreperation((conn, dbName) => {

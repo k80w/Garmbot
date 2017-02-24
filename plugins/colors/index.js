@@ -1,4 +1,4 @@
-const debug = require("debug")("garmbot:colors"),
+const debug = require("debug")("garmbot:module:colors"),
 	Discord = require("discord.js"),
 	r = require("rethinkdb");
 
