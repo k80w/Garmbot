@@ -107,9 +107,12 @@ class Garmbot extends Discord.Client {
 			for (let i = 0; i < commands.length; i++) {
 				if (commands[i].aliases.indexOf(commandName) > -1) {
 					debug("Executing command %s", commandName);
-					try {
-						return commands[i].function(message, args)
-					} catch (err) {
+
+					if (message.deletable) {
+						await message.delete();
+					}
+
+					return commands[i].function(message, args).catch((err) => {
 						let id = uuid.v4();
 						this.errorHandler(err, id);
 
@@ -120,16 +123,20 @@ class Garmbot extends Discord.Client {
 							.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
 							.setColor(0xff0000);
 						return message.channel.sendEmbed(embed, message.author.toString());
-					}
+					});
 				}
 			}
 
-			let embed = new Discord.RichEmbed();
-			embed.setTitle("Command not found");
-			embed.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.");
-			embed.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
-			embed.setColor(0xff0000);
+			if (message.deletable) {
+				await message.delete();
+			}
 
+			let embed = new Discord.RichEmbed()
+				.setTitle("Command not found")
+				.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.")
+				.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
+				.setColor(0xff0000);
+			
 			return message.channel.sendEmbed(embed, message.author.toString());
 		}
 	}
