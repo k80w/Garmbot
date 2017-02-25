@@ -108,10 +108,6 @@ class Garmbot extends Discord.Client {
 				if (commands[i].aliases.indexOf(commandName) > -1) {
 					debug("Executing command %s", commandName);
 
-					if (message.deletable) {
-						await message.delete();
-					}
-
 					return commands[i].function(message, args).catch((err) => {
 						let id = uuid.v4();
 						this.errorHandler(err, id);
@@ -120,24 +116,23 @@ class Garmbot extends Discord.Client {
 							.setTitle("I've been hecked!")
 							.setDescription("I'm not sure what I did, but I hit an error trying to do that! I'm s-sorry ;-;")
 							.addField("Please report this error", "Go to http://github.com/dnaf/Garmbot/issues and report this issue, along with the following code\n\n`" + id + "`")
-							.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
+							.setThumbnail("https://i.imgur.com/Q0qnyNy.png")
 							.setColor(0xff0000);
 						return message.channel.sendEmbed(embed, message.author.toString());
-					});
+					}).then(() => {
+							if(message.deletable) message.delete(2000)
+						});
 				}
 			}
 
-			if (message.deletable) {
-				await message.delete();
-			}
 
 			let embed = new Discord.RichEmbed()
 				.setTitle("Command not found")
 				.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.")
-				.setThumbnail("https://images.pexels.com/photos/14303/pexels-photo-14303.jpeg?fit=crop&w=128&h=128")
-				.setColor(0xff0000);
+				.setThumbnail("https://i.imgur.com/Nxr2CNV.png")
+				.setColor(0x800080);
 			
-			return message.channel.sendEmbed(embed, message.author.toString());
+			return message.channel.sendEmbed(embed, message.author.toString()).then(() => {if (message.deletable) message.delete(2000)});
 		}
 	}
 
