@@ -238,12 +238,60 @@ class Garmbot extends Discord.Client {
 		});
 	}
 
-	async getUserPermission(user, guild, permission) {
-		await this.conn;
+	/**
+	 * Tests to see if a user has the specified permission in the given guild and channel
+	 * @param {User|String} user The user or user ID to check
+	 * @param {Guild|String} guild The guild or guild ID to check
+	 * @param {Channel|String} [channel] The channel or channel ID to check
+	 * @param {String} permission The permission to check for
+	 */
+	async getUserPermission(user, guild, channel, permission) {
+		// If there's only three arguments, get rid of channel.
+		if (!permission) {
+			permission = channel;
+			channel = undefined;
+		}
 
-		//let dbName = this.getGuildDBName(guild);
+		debug("Checking %s's permission %s in guild %s channel %s", user, permission, guild, channel);
 
-		//return r.db(dbName).table("permissions")
+		let conn = await this.conn;
+
+		let chain = r.db(this.getGuildDBName(guild)).table("permissions").filter({permission});
+
+		// User > Highest role > Lowest role > Channel > Server
+
+		debug(await (await chain.filter({
+			scope: "guild"
+		}).getField("value").run(conn)).toArray()[0]);
+
+		// Check server scope
+		let serverScope = (await (await chain.filter({
+			scope: "guild"
+		}).getField("value").run(conn)).toArray())[0];
+		let granted = serverScope || false;
+		debug("Server-scope: %s", serverScope);
+
+		// Check channel scope (if applicable)
+		if (channel) {
+			let channelScope = (await (await chain.filter({
+				scope: "channel",
+				channel: channel.id || channel
+			}).getField("value").run(conn)).toArray())[0];
+			if (channelScope !== undefined) granted = channelScope;
+			debug("Channel-scope: %s", channelScope);
+		}
+
+		// TODO: Check role scope
+
+		// Check user scope
+		let userScope = (await (await chain.filter({
+			scope: "user",
+			user: user.id || user
+		}).getField("value").run(conn)).toArray())[0];
+		if (userScope !== undefined) granted = userScope;
+		debug("User-scope: %s", userScope);
+		
+		return granted;
 	}
 
 	/**
