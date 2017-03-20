@@ -57,16 +57,16 @@ module.exports = function(garmbot) {
 
 				debug("Pushing request onto queue");
 				queue.push(url);
-				if (!(await connection).playing) { // Is there a dispatcher?
-					debug("There's no dispatcher on this connection; playing stream.");
+				if (!(await connection).playing) { // Is something already playing?
+					debug("Nothing's playing; lets play our new music!");
 					await play(await connection, queue);
 				}
-				message.reply("Added to queue!");
+				return message.reply("Added to queue!");
 			} else {
-				message.reply("You can only use that command while in a voice channel.");
+				return message.reply("You can only use that command while in a voice channel.");
 			}
 		} else {
-			message.reply("You can't play music in DMs fam :sunglasses: :ok_hand:")
+			return message.reply("You can't play music in DMs fam :sunglasses: :ok_hand:")
 		}
 	});
 
