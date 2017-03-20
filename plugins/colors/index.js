@@ -72,7 +72,7 @@ module.exports = function(garmbot) {
 		let embed = new Discord.RichEmbed()
 			.setTitle("Available colors")
 			.setDescription(colors.join(", "));
-		
+
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 	garmbot.addCommand(["addcolor", "addcolors"], async function(message) {

@@ -14,7 +14,7 @@ module.exports = function(garmbot) {
 		let table = r.db(garmbot.getGuildDBName(message.guild)).table("tags");
 
 		args = args.trim().split(" ");
-		
+
 		if (args[0].length === 0) {
 			args = [];
 		}
@@ -35,14 +35,14 @@ module.exports = function(garmbot) {
 					.setTitle("Tags")
 					.setDescription(tags.join(", "))
 					.setColor(0x00ff00);
-			
+
 				return message.channel.sendEmbed(embed, message.author.toString());
 			} else {
 				let embed = new Discord.RichEmbed()
 					.setTitle("No tags")
 					.setDescription("There aren't any tags on this server yet.")
 					.setColor(0xff0000);
-			
+
 				return message.channel.sendEmbed(embed, message.author.toString());
 			}
 		} else if (args.length === 1) { // Return tag
@@ -70,7 +70,7 @@ module.exports = function(garmbot) {
 						author = undefined;
 					}
 				}
-				
+
 				let embed = new Discord.RichEmbed()
 					.setTitle(tagName);
 				if (!hideData) embed.setDescription(tag.data);
@@ -109,7 +109,7 @@ module.exports = function(garmbot) {
 				.setTitle("Doneski!")
 				.setDescription("Successfully created the tag `" + tagName + "`")
 				.setColor(0x00ff00);
-			
+
 			return message.channel.sendEmbed(embed, message.author.toString());
 		}
 	});

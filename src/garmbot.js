@@ -86,7 +86,7 @@ class Garmbot extends Discord.Client {
 		if (message.author.bot) return; // Dont respond to bots
 		if (message.system) return; // Discard system messages
 		if (!message.guild) return message.reply("DMs are a work in progress :sunglasses:");
-		
+
 		let prefix;
 		if (message.guild) {
 			prefix = await r.db(this.getGuildDBName(message.guild)).table("config").get("commandPrefix").run(conn);
@@ -101,9 +101,9 @@ class Garmbot extends Discord.Client {
 			let content = message.content.substr(prefix.length);
 			let commandName = (content.match(/^[a-zA-Z0-9\.]+/)[0] || "").toLowerCase();
 			let args = content.substr(prefix.length + commandName.length);
-			
+
 			let commands = await this.commands;
-			
+
 			for (let i = 0; i < commands.length; i++) {
 				if (commands[i].aliases.indexOf(commandName) > -1) {
 					debug("Executing command %s", commandName);
@@ -131,7 +131,7 @@ class Garmbot extends Discord.Client {
 				.setDescription("The command `" + commandName + "` was not found.\nTry using `" + prefix + "help` for more information.")
 				.setThumbnail("https://i.imgur.com/Nxr2CNV.png")
 				.setColor(0x800080);
-			
+
 			return message.channel.sendEmbed(embed, message.author.toString()).then(() => {if (message.deletable) message.delete(2000);});
 		}
 	}

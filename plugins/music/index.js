@@ -66,9 +66,9 @@ module.exports = function(garmbot) {
 				return message.reply("You can only use that command while in a voice channel.");
 			}
 		} else {
-			return message.reply("You can't play music in DMs fam :sunglasses: :ok_hand:")
+			return message.reply("You can't play music in DMs fam :sunglasses: :ok_hand:");
 		}
 	});
 
-	return servers
-}
+	return servers;
+};
