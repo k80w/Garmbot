@@ -58,12 +58,12 @@ module.exports = function(garmbot) {
 
 			embed
 				.setTitle("Color cleared")
-				.setDescription("You're free!")
+				.setDescription("You're free!");
 		}
 
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
-	garmbot.addCommand(["colors"], async function(message, args) {
+	garmbot.addCommand(["colors"], async function(message) {
 		let conn = await garmbot.conn;
 		let colors = await (await r.db(garmbot.getGuildDBName(message.guild)).table("colorRoles").run(conn)).toArray().map((v) => {
 			return message.guild.roles.get(v.id).name;
@@ -75,7 +75,7 @@ module.exports = function(garmbot) {
 		
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
-	garmbot.addCommand(["addcolor", "addcolors"], async function(message, args) {
+	garmbot.addCommand(["addcolor", "addcolors"], async function(message) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (message.member.hasPermission("ADMINISTRATOR")) {
 			let conn = await garmbot.conn;
@@ -109,4 +109,4 @@ module.exports = function(garmbot) {
 			return message.channel.sendEmbed(embed, message.author.toString());
 		}
 	});
-}
+};

@@ -4,20 +4,20 @@ const debug = require("debug")("garmbot:module:moderation"),
 
 function ordinalSuffix(n) {
 	var d = (n|0)%100;
-	return d > 3 && d < 21 ? 'th' : ['th', 'st', 'nd', 'rd'][d%10] || 'th';
-};
+	return d > 3 && d < 21 ? "th" : ["th", "st", "nd", "rd"][d%10] || "th";
+}
 
 module.exports = function(garmbot) {
 	garmbot.addGuildPreperation(async (conn, dbName) => {
 		await garmbot.createTableIfNotExists(dbName, "infractions");
 		await garmbot.createIndexIfNotExists(dbName, "infractions", "user");
 	});
-	garmbot.addCommand(["warn"], async function(message, args) {
+	garmbot.addCommand(["warn"], async function(message) {
 		let embed = new Discord.RichEmbed();
 
 		// TODO: Use the homebrew permission system when that's a thing
 		if (message.member.hasPermission("MANAGE_MESSAGES")) {
-			let user = message.mentions.users.first()
+			let user = message.mentions.users.first();
 
 			if (user) {
 				let warning = message.cleanContent.split(" ");
@@ -56,4 +56,4 @@ module.exports = function(garmbot) {
 
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
-}
+};

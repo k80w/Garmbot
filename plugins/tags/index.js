@@ -67,7 +67,7 @@ module.exports = function(garmbot) {
 					if (author) {
 						author = author.username + "#" + author.discriminator;
 					} else {
-						delete author;
+						author = undefined;
 					}
 				}
 				

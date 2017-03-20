@@ -2,7 +2,7 @@ const debug = require("debug")("garmbot:module:poopd4y"),
 	Discord = require("discord.js");
 
 module.exports = function(garmbot) {
-	garmbot.addCommand(["isitpoopday", "isitpoopdayyet"], async function(message, args) {
+	garmbot.addCommand(["isitpoopday", "isitpoopdayyet"], async function(message) {
 		debug("Checking to see if it's poop day");
 		let date = new Date();
 
@@ -20,4 +20,4 @@ module.exports = function(garmbot) {
 
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
-}
+};
