@@ -27,6 +27,10 @@ module.exports = {
             {
                 "skipBlankLines": false
             }
+        ],
+        "dot-location": [
+            "error",
+            "property"
         ]
     }
 };
