@@ -31,7 +31,7 @@ class Garmbot extends Discord.Client {
 		this.commands = [];
 		this.guildPreperationFunctions = [
 			async (conn, dbName) => {
-				await this.createDatabaseIfNotExists(dbName)
+				await this.createDatabaseIfNotExists(dbName);
 			},
 			async (conn, dbName) => {
 				await this.createTableIfNotExists(dbName, "config", {
@@ -67,7 +67,7 @@ class Garmbot extends Discord.Client {
 			}
 		}
 		debug("Can't report it to anyone");
-		console.error(err);		
+		console.error(err);
 	}
 
 	async ready() {
@@ -120,8 +120,8 @@ class Garmbot extends Discord.Client {
 							.setColor(0xff0000);
 						return message.channel.sendEmbed(embed, message.author.toString());
 					}).then(() => {
-							if(message.deletable) message.delete(2000)
-						});
+						if(message.deletable) message.delete(2000);
+					});
 				}
 			}
 
@@ -132,7 +132,7 @@ class Garmbot extends Discord.Client {
 				.setThumbnail("https://i.imgur.com/Nxr2CNV.png")
 				.setColor(0x800080);
 			
-			return message.channel.sendEmbed(embed, message.author.toString()).then(() => {if (message.deletable) message.delete(2000)});
+			return message.channel.sendEmbed(embed, message.author.toString()).then(() => {if (message.deletable) message.delete(2000);});
 		}
 	}
 
