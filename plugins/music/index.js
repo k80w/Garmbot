@@ -16,9 +16,11 @@ async function play(connection, queue) {
 			volume: 1,
 			passes: 1
 		});
+		connection.playing = true;
 		debug("Stream playing");
 		dispatcher.on("end", () => {
 			debug("Stream ended");
+			connection.playing = false;
 			return play(connection, queue);
 		});
 	}
@@ -55,7 +57,7 @@ module.exports = function(garmbot) {
 
 				debug("Pushing request onto queue");
 				queue.push(url);
-				if (!(await connection).player.dispatcher) { // Is there a dispatcher?
+				if (!(await connection).playing) { // Is there a dispatcher?
 					debug("There's no dispatcher on this connection; playing stream.");
 					await play(await connection, queue);
 				}
