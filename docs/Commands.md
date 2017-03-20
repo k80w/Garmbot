@@ -1,3 +1,7 @@
+# Music
+
+ - `!play [Link/Search query]` Adds the given Youtube link or search query to the music queue.
+
 # Fun
 
  - `!color [Color]` Sets your color. If no color is specified, removes your color.
