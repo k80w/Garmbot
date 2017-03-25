@@ -70,5 +70,5 @@ module.exports = function(garmbot) {
 		}
 	});
 
-	return servers
-}
+	return servers;
+};
