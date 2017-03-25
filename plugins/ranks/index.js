@@ -104,11 +104,11 @@ module.exports = function(garmbot) {
 		let embed = new Discord.RichEmbed()
 			.setTitle("Available subscribbles")
 			.setDescription(subscriptionsAndDescriptions.join("\n"));
-		
+
 		if (subscriptionsAndDescriptions.length === 0) {
 			embed
 			.setTitle("No available subscribbles :(")
-			.setColor(0xff0000);			
+			.setColor(0xff0000);
 		}
 
 		return message.channel.sendEmbed(embed, message.author.toString());
