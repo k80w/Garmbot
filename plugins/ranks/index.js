@@ -5,12 +5,12 @@ const Discord = require("discord.js"),
 const tableName = "subscriptionRoles";
 const emptyDescription = "N/A";
 
-module.exports = function (garmbot) {
+module.exports = function(garmbot) {
 	garmbot.addGuildPreperation(async (conn, dbName) => {
 		await garmbot.createTableIfNotExists(dbName, tableName);
 	});
 
-	garmbot.addCommand(["rank", "sub", "subscribe"], async function (message) {
+	garmbot.addCommand(["rank", "sub", "subscribe"], async function(message) {
 		let conn = await garmbot.conn;
 		let table = r.db(garmbot.getGuildDBName(message.guild)).table(tableName);
 		let subIDs = await table.run(conn);
@@ -35,15 +35,15 @@ module.exports = function (garmbot) {
 			if (availableRoleToSub == null) {
 				return false;
 			}
-			
+
 			if (availableRoleToSub.id == id) {
 				let availableRoleToGuild = message.guild.roles.find(role => role.id == id);
-				verifiedRoles.push(availableRoleToGuild);				
+				verifiedRoles.push(availableRoleToGuild);
 				await message.member.addRole(availableRoleToGuild);
 				return true;
 			}
 		});
-	
+
 		if (verifiedRoles.length == 0) {
 			embed
 				.setTitle("No valid subscribbles were found in your request :(")
@@ -69,7 +69,7 @@ module.exports = function (garmbot) {
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["unsub", "unsubscribe"], async function (message, args) {
+	garmbot.addCommand(["unsub", "unsubscribe"], async function(message, args) {
 		let conn = await garmbot.conn;
 		let table = r.db(garmbot.getGuildDBName(message.guild)).table(tableName);
 		let subIDs = await table.run(conn);
@@ -111,7 +111,7 @@ module.exports = function (garmbot) {
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["ranks", "subscriptions", "subs"], async function (message) {
+	garmbot.addCommand(["ranks", "subscriptions", "subs"], async function(message) {
 		let conn = await garmbot.conn;
 		let subscriptionsAndDescriptions = await (await r.db(garmbot.getGuildDBName(message.guild)).table(tableName).run(conn)).toArray().map((v, i) => {
 			let role = message.guild.roles.get(v.id);
@@ -131,7 +131,7 @@ module.exports = function (garmbot) {
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["addrank", "addranks", "addsub", "addsubs"], async function (message) {
+	garmbot.addCommand(["addrank", "addranks", "addsub", "addsubs"], async function(message) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			return;
@@ -166,7 +166,7 @@ module.exports = function (garmbot) {
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["rmrank", "rmranks", "rmsub", "rmsubs"], async function (message) {
+	garmbot.addCommand(["rmrank", "rmranks", "rmsub", "rmsubs"], async function(message) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			return;
@@ -201,7 +201,7 @@ module.exports = function (garmbot) {
 	 * describerank can also be used to add new roles and describe them from
 	 * the start, but only one at a time
 	 */
-	garmbot.addCommand(["describerank", "describesub"], async function (message) {
+	garmbot.addCommand(["describerank", "describesub"], async function(message) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			return;
@@ -226,8 +226,8 @@ module.exports = function (garmbot) {
 				id: role.id,
 				description: description || emptyDescription
 			}, {
-					conflict: "replace"
-				}).run(conn);
+				conflict: "replace"
+			}).run(conn);
 
 			return res.errors == 0;
 		});
