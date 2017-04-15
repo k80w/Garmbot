@@ -5,54 +5,71 @@ const Discord = require("discord.js"),
 const tableName = "subscriptionRoles";
 const emptyDescription = "N/A";
 
-module.exports = function(garmbot) {
+module.exports = function (garmbot) {
 	garmbot.addGuildPreperation(async (conn, dbName) => {
 		await garmbot.createTableIfNotExists(dbName, tableName);
 	});
 
-	garmbot.addCommand(["rank", "sub", "subscribe"], async function(message, args) {
+	garmbot.addCommand(["rank", "sub", "subscribe"], async function (message) {
 		let conn = await garmbot.conn;
 		let table = r.db(garmbot.getGuildDBName(message.guild)).table(tableName);
 		let subIDs = await table.run(conn);
 
-		let aSubscription = args.toLowerCase().trim();
+		let roleIdsToAdd = message.mentions.roles.map(role => role.id);
 
-		let roles = await subIDs.toArray();
+		let availableRoles = await subIDs.toArray();
 
-		let embed = new Discord.RichEmbed();
+		let embed = new Discord.RichEmbed()
+			.setTitle("No nubscribble specified :(")
+			.setDescription("Please mention the subscribbles you'd like to subscribble to!")
+			.setColor(0xff0000);
 
-		if (aSubscription.length > 0) {
-			let role;
+		if (roleIdsToAdd.length == 0) {
+			return message.channel.sendEmbed(embed, message.author.toString());
+		}
 
-			for (let i = 0; i < roles.length; i++) {
-				role = message.guild.roles.get(roles[i].id);
+		let verifiedRoles = [];
 
-				if (role && role.name.toLowerCase() === aSubscription) {
-					break;
-				} else {
-					role = undefined;
-				}
+		let success = await roleIdsToAdd.every(async (id) => {
+			let availableRoleToSub = availableRoles.find(role => role.id == id);
+			if (availableRoleToSub == null) {
+				return false;
 			}
-
-			if (role) {
-				await message.member.addRole(role);
-
-				embed
-					.setTitle(`Subscribbled to ${role.name}!`)
-					.setDescription("You'll now receive pings when this rank is mentioned!")
-                    .setColor(0x00ff00);
-			} else {
-				embed
-					.setTitle("Subscribble not found :(")
-					.setDescription("Make sure you spelled it right")
-					.setColor(0xff0000);
+			
+			if (availableRoleToSub.id == id) {
+				let availableRoleToGuild = message.guild.roles.find(role => role.id == id);
+				verifiedRoles.push(availableRoleToGuild);				
+				await message.member.addRole(availableRoleToGuild);
+				return true;
 			}
+		});
+	
+		if (verifiedRoles.length == 0) {
+			embed
+				.setTitle("No valid subscribbles were found in your request :(")
+				.setDescription("Make sure you mentioned roles that are available from !ranks!")
+				.setColor(0xff0000);
+		} else if (verifiedRoles.length != roleIdsToAdd.length) {
+			embed
+				.setTitle("Some subscribbles were not found found in your request :|")
+				.setDescription(`But we added the ones that matched: ${verifiedRoles.map(role => role.name).join(", ")}`)
+				.setColor(0xffff00);
+		} else if (success) {
+			embed
+				.setTitle("Subscribbled successfully :)")
+				.setDescription(`You'll now receive pings when these ranks are mentioned: ${verifiedRoles.map(role => role.name).join(", ")}!`)
+				.setColor(0x00ff00);
+		} else {
+			embed
+				.setTitle("Uh-oh")
+				.setDescription("Something weird went wrong, try again!")
+				.setColor(0xff0000);
 		}
 
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["unsub", "unsubscribe"], async function(message, args) {
+	garmbot.addCommand(["unsub", "unsubscribe"], async function (message, args) {
 		let conn = await garmbot.conn;
 		let table = r.db(garmbot.getGuildDBName(message.guild)).table(tableName);
 		let subIDs = await table.run(conn);
@@ -82,7 +99,7 @@ module.exports = function(garmbot) {
 				embed
 					.setTitle(`Unsubscribbled from  ${role.name}.`)
 					.setDescription("You'll no longer receive pings when this rank is mentioned.")
-                    .setColor(0x00ff00);
+					.setColor(0x00ff00);
 			} else {
 				embed
 					.setTitle("Subscribble not found :(")
@@ -94,7 +111,7 @@ module.exports = function(garmbot) {
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["ranks", "subscriptions", "subs"], async function(message) {
+	garmbot.addCommand(["ranks", "subscriptions", "subs"], async function (message) {
 		let conn = await garmbot.conn;
 		let subscriptionsAndDescriptions = await (await r.db(garmbot.getGuildDBName(message.guild)).table(tableName).run(conn)).toArray().map((v, i) => {
 			let role = message.guild.roles.get(v.id);
@@ -107,14 +124,14 @@ module.exports = function(garmbot) {
 
 		if (subscriptionsAndDescriptions.length === 0) {
 			embed
-			.setTitle("No available subscribbles :(")
-			.setColor(0xff0000);
+				.setTitle("No available subscribbles :(")
+				.setColor(0xff0000);
 		}
 
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["addrank", "addranks", "addsub", "addsubs"], async function(message) {
+	garmbot.addCommand(["addrank", "addranks", "addsub", "addsubs"], async function (message) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			return;
@@ -149,7 +166,7 @@ module.exports = function(garmbot) {
 		return message.channel.sendEmbed(embed, message.author.toString());
 	});
 
-	garmbot.addCommand(["rmrank", "rmranks", "rmsub", "rmsubs"], async function(message) {
+	garmbot.addCommand(["rmrank", "rmranks", "rmsub", "rmsubs"], async function (message) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			return;
@@ -184,7 +201,7 @@ module.exports = function(garmbot) {
 	 * describerank can also be used to add new roles and describe them from
 	 * the start, but only one at a time
 	 */
-	garmbot.addCommand(["describerank", "describesub"], async function(message) {
+	garmbot.addCommand(["describerank", "describesub"], async function (message) {
 		// TODO: Use the homebrew permission system when that's a thing
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			return;
@@ -209,8 +226,8 @@ module.exports = function(garmbot) {
 				id: role.id,
 				description: description || emptyDescription
 			}, {
-				conflict: "replace"
-			}).run(conn);
+					conflict: "replace"
+				}).run(conn);
 
 			return res.errors == 0;
 		});
