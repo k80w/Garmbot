@@ -99,7 +99,7 @@ class Garmbot extends Discord.Client {
 		if (message.content.startsWith(prefix)) {
 			debug("Received command in message %s", message.id);
 			let content = message.content.substr(prefix.length);
-			let commandName = (content.match(/^[a-zA-Z0-9\.]+/)[0] || "").toLowerCase();
+			let commandName = ((content.match(/^[a-zA-Z0-9\.]+/) || [])[0] || "").toLowerCase();
 			let args = content.substr(prefix.length + commandName.length);
 			
 			let commands = await this.commands;
